@@ -4,7 +4,8 @@
 
             this.defaultOptions = {
                 position: 'bottom',
-                iconpack: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'
+                iconpack: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css',
+                iconsize: 'fa-2x'
             };
 
             var shortcuts = load();
@@ -26,13 +27,21 @@
 
 
             function render() {
-                var container = $('<div id="shortcutsjs"><span id="addshortcut">+</span></div>');
+                var container = $('<div id="shortcutsjs"><span class="fa fa-plus" id="addshortcut"></span></div>');
 
                 $(shortcuts).each(function(key,el){
                     var shortcut = render_individual_shortcut(el);
 
                     $(shortcut).appendTo($(container));
                 });
+
+
+                var css_link = $("<link>", {
+                    rel: "stylesheet",
+                    type: "text/css",
+                    href: settings.iconpack
+                });
+                css_link.appendTo('head');
 
                 $(container).css({
                     position: 'absolute',
@@ -52,7 +61,8 @@
             }
 
             function render_individual_shortcut(el){
-                var button = $("<button class='shortcutjs_sbutton' data-url='"+el.url+"' data-title='"+el.name+"'><i class='"+el.icon+"'></i> </button>");
+
+                var button = $("<button class='fa shortcutjs_sbutton' data-url='"+el.url+"' data-title='"+el.name+"'><i class='"+el.icon+" "+settings.iconsize+"'> </i> </button>");
                 return button;
             }
 
