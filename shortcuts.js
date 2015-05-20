@@ -51,7 +51,7 @@
             }
 
             function render() {
-                var container = $('<div id="shortcutsjs"><span class="fa fa-plus fa-2x" id="addshortcut"></span></div>');
+                var container = $('<div id="shortcutsjs"><span class="fa fa-plus fa-2x" id="addshortcut"></span><span class="fa fa-cog fa-2x" id="manageshortcuts"></span></div>');
 
                 $(shortcuts).each(function(key,el){
                     var shortcut = render_individual_shortcut(el);
@@ -59,7 +59,7 @@
                     $(shortcut).appendTo($(container));
                 });
 
-                $("<style></style>").html("#shortcutsjs{background:#fff;z-index:9999}#shortcutsjs label{width:150px;display:inline-block}#addshortcut{border-right:1px solid #eee;cursor:pointer;display:inline-block;margin-right:5px;padding:0 5px;vertical-align:sub;-webkit-transition:all 500ms;transition:all 500ms}#addshortcut:hover{color:#00ff6f}.shortcutjs_sbutton:hover{color:#00ff6f;transform:scale(1.6)}.shortcutjs_sbutton{background:0 0;border:0;cursor:pointer;margin:3px;-webkit-transition:all 500ms;transition:all 500ms}#shcutsjs_cancel_prom,#shcutsjs_submit_prom{background:#eee;border:1px solid #ccc;cursor:pointer;margin:5px 10px 5px 0;padding:5px;width:170px;-webkit-transition:all 500ms;transition:all 500ms}#shcutsjs_cancel_prom:hover,#shcutsjs_submit_prom:hover{background:#00ff6f}#shcutsjs_cancel_prom{margin:5px 0 5px 10px}#shortcutsjs_prompt{border:1px solid #eee;margin:10px;padding:10px 5px;width:365px}#shortcutsjs input{border:1px solid #ccc;border-radius:0;display:inline-block;width:211px}#shcutsjs_icon{border:1px solid #ccc;margin-right:5px;width:190px}").appendTo("head");
+                $("<style></style>").html(".shortcutjs_mbutton{cursor:no-drop;color:#ff0000;border:0;margin:3px}#shortcutsjs{background:#fff;z-index:9999}#shortcutsjs label{width:150px;display:inline-block}#addshortcut{border-right:1px solid #eee;cursor:pointer;display:inline-block;margin-right:5px;padding:0 5px;vertical-align:sub;-webkit-transition:all 500ms;transition:all 500ms}#addshortcut:hover{color:#00ff6f}.shortcutjs_sbutton:hover{color:#00ff6f;transform:scale(1.6)}.shortcutjs_sbutton{background:0 0;border:0;cursor:pointer;margin:3px;-webkit-transition:all 500ms;transition:all 500ms}#shcutsjs_cancel_prom,#shcutsjs_submit_prom{background:#eee;border:1px solid #ccc;cursor:pointer;margin:5px 10px 5px 0;padding:5px;width:170px;-webkit-transition:all 500ms;transition:all 500ms}#shcutsjs_cancel_prom:hover,#shcutsjs_submit_prom:hover{background:#00ff6f}#shcutsjs_cancel_prom{margin:5px 0 5px 10px}#shortcutsjs_prompt{border:1px solid #eee;margin:10px;padding:10px 5px;width:365px}#shortcutsjs input{border:1px solid #ccc;border-radius:0;display:inline-block;width:211px}#shcutsjs_icon{border:1px solid #ccc;margin-right:5px;width:190px}").appendTo("head");
 
                 var css_link = $("<link>", {
                     rel: "stylesheet",
@@ -98,9 +98,19 @@
             function render_individual_shortcut(el){
 
                 if(el.icon.indexOf('fa-')>-1){
-                    var button = $("<button class='shortcutjs_sbutton' data-url='"+el.url+"' data-title='"+el.name+"'><i class='fa "+el.icon+" "+settings.iconsize+"'> </i> </button>");
+                    var button = $("<button class='shortcutjs_sbutton' data-url='"+el.url+"' title='"+el.name+"'><i class='fa "+el.icon+" "+settings.iconsize+"'> </i> </button>");
                 }else{
-                    var button = $("<button class='shortcutjs_sbutton' data-url='"+el.url+"' data-title='"+el.name+"'><i class=''><img style='vertical-align: sub' width='20' src='"+el.icon+"'> </i> </button>");
+                    var button = $("<button class='shortcutjs_sbutton' data-url='"+el.url+"' title='"+el.name+"'><i class=''><img style='vertical-align: sub' width='20' src='"+el.icon+"'> </i> </button>");
+                }
+
+                return button;
+            }
+            function render_individual_manage(el){
+
+                if(el.icon.indexOf('fa-')>-1){
+                    var button = $("<button class='shortcutjs_mbutton' data-url='"+el.url+"' title='Remove'><i class='fa "+el.icon+" "+settings.iconsize+"'> </i> </button>");
+                }else{
+                    var button = $("<button class='shortcutjs_mbutton' data-url='"+el.url+"' title='Remove'><i class=''><img style='vertical-align: sub' width='20' src='"+el.icon+"'> </i> </button>");
                 }
 
                 return button;
@@ -188,6 +198,34 @@
 
                 document.location = $(this).data('url');
             });
+            $(document).on('click',".shortcutjs_mbutton",function(){
+                var me = $(this);
+                var answ = window.confirm('Delete this Shortcut?');
+                if(answ){
+                    $(shortcuts).each(function(key,obj){
+                        if(obj.url==me.data('url')){
+                            shortcuts.splice(key,1);
+                            save();
+                            rerender();
+                        }
+                    });
+                }
+                return false;
+            });
+
+            $(document).on('click',"#manageshortcuts",function(){
+                var prom = $("<div id='shortcutsjs_prompt'></div>");
+                $(shortcuts).each(function(i,el){
+                    var shortcut = render_individual_manage(el);
+
+                    $(shortcut).appendTo($(prom));
+                });
+                $(prom).appendTo('#shortcutsjs');
+
+            });
+
+
+
 
             function getIconList(){
                 var list = "|fa-adjust"+
